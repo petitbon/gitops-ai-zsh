@@ -23,7 +23,7 @@ AI-powered Git helper for Zsh that
 ### oh-my-zsh
 
 ```zsh
-git clone https://github.com/<you>/gitops-ai-zsh.git $ZSH_CUSTOM/plugins/gitops-ai-zsh
+git clone https://github.com/petitbon/gitops-ai-zsh.git $ZSH_CUSTOM/plugins/gitops-ai-zsh
 plugins+=(gitops-ai-zsh)   # add to your ~/.zshrc
 source ~/.zshrc
 ```
