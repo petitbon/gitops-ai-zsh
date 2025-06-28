@@ -1,25 +1,23 @@
+
 get_org() {
   git config --get remote.origin.url 2>/dev/null |
     sed -E 's#\.git$##' |
     awk -F'[:/]' '{print $(NF-1)}' |
-    awk -F'-' '{
-      for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)
-      OFS="-"; print
-    }'
+    tr '[:lower:]' '[:upper:]'
 }
 
 generate_commit_msg() {
   local diff=$(git diff --cached | head -n 400)
   local org=$(get_org)
   local scope_part=""
-  [[ -n $org ]] && scope_part="($org)"
+  [[ -n $org ]] && scope_part="[$org]"
   [[ -z $diff ]] && { echo "chore${scope_part}: empty commit"; return; }
 
   local model="gpt-4o-mini" response http_code msg
   response=$(jq -n --arg diff "$diff" --arg s "$scope_part" --arg m "$model" '{
       model:$m,
       messages:[
-        {role:"system",content:"Write a single-line Conventional Commit message i.e. feat[organization]: new super feature to take over the world. Valid types: build,chore,ci,docs,feat,fix,perf,refactor,revert,style,test. use $s for scope like the [organizatio] in the example.  if empty leave it blank."},
+        {role:"system",content:"Write a single-line Conventional Commit message i.e. feat[ORG]: new super feature to take over the world. Valid types: build,chore,ci,docs,feat,fix,perf,refactor,revert,style,test. use $s for scope like the [ORG] in the example. if empty leave it blank."},
         {role:"user",content:$diff}
       ],
       max_tokens:80,
@@ -56,4 +54,3 @@ gitops() {
   echo 'Git operations completed successfully.'
   echo '===== gitops done ====='
 }
-
